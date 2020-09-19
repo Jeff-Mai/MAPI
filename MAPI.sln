@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30320.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAPI.Lib", "MAPI.Lib\MAPI.Lib.csproj", "{1DBB0FD9-9F21-4FEB-B01C-9035B3930C8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAPI.Server", "MAPI.Server\MAPI.Server.csproj", "{9BF9DB8A-BAE3-4912-A54D-6D6178EBE3CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MAPI.Test", "MAPI.Test\MAPI.Test.csproj", "{DAF067F9-1790-4C04-8B60-1D5A40F4DC67}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1DBB0FD9-9F21-4FEB-B01C-9035B3930C8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DBB0FD9-9F21-4FEB-B01C-9035B3930C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DBB0FD9-9F21-4FEB-B01C-9035B3930C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DBB0FD9-9F21-4FEB-B01C-9035B3930C8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9BF9DB8A-BAE3-4912-A54D-6D6178EBE3CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BF9DB8A-BAE3-4912-A54D-6D6178EBE3CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BF9DB8A-BAE3-4912-A54D-6D6178EBE3CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BF9DB8A-BAE3-4912-A54D-6D6178EBE3CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAF067F9-1790-4C04-8B60-1D5A40F4DC67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAF067F9-1790-4C04-8B60-1D5A40F4DC67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAF067F9-1790-4C04-8B60-1D5A40F4DC67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAF067F9-1790-4C04-8B60-1D5A40F4DC67}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {45D1C173-44D3-46DB-9E45-EC4E3762B354}
+	EndGlobalSection
+EndGlobal
