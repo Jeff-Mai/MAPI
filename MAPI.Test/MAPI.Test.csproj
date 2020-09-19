@@ -4,6 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>E:\MyWorks\Private\MAPI\MAPI.Server\bin\Debug\netcoreapp3.0\MAPI.Test\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\MAPI.Lib\MAPI.Lib.csproj" />
   </ItemGroup>

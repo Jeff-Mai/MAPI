@@ -2,9 +2,11 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
+using MAPI.Lib;
 
 namespace MAPI.Server
 {
@@ -44,58 +46,75 @@ namespace MAPI.Server
             HttpListenerRequest request = context.Request;
             //用来向客户端发送回复
             HttpListenerResponse response = context.Response;
-
-            StreamReader reader = new StreamReader(request.InputStream);
-            string text = reader.ReadToEnd();
-
-            //或者JObject jo = JObject.Parse(jsonText);
-            JObject jo = (JObject)JsonConvert.DeserializeObject(text);
-
-            Console.WriteLine(text);
-            string Sign = jo["Sign"].ToString();//输出 "深圳"
-            Console.WriteLine(Sign);
-            int A1 = Convert.ToInt32(jo["A1"]);
-            Console.WriteLine(A1.ToString());
-            JObject jo1 = (JObject)JsonConvert.DeserializeObject(jo["Data"].ToString());
-            string DBox = jo1["DBox"].ToString();
-            Console.WriteLine(DBox);
-            string DD =  jo1["DD"][0].ToString();
-            Console.WriteLine(DD);
-            //string Sign = jo1["Sign"].ToString();
-
-
-            Console.WriteLine(request.RawUrl);
-
-            Console.WriteLine(request.Url.OriginalString);
-            Console.WriteLine(request.Url.AbsoluteUri);
-            Console.WriteLine(request.Url.PathAndQuery);
-            Console.WriteLine(request.Url.Query);
-
-            Console.WriteLine(request.HttpMethod);
-            Console.WriteLine(request.ContentType);
-            //以下开始与 开发者编写的Web网站程序交互
-            //找网站中的路由器
-            //if (_router == null)
-            //{
-            //    Assembly assemble = Assembly.LoadFile(Environment.CurrentDirectory + "\\web\\" + website_name + ".dll"); //加载web目录下的网站程序
-            //    Type type = assemble.GetType(website_name + ".Router");  //注意网站程序中的路由器必须命名为 ns.Router
-            //    _router = Activator.CreateInstance(type) as MAPI.Lib.IZRouter;  //创建路由器的实例
-            //}
-
-            //_handler = _router.GetHandler(request.Url.AbsolutePath);  //根据路由器，找web网站中对应的处理者
-            //if (_handler != null)
-            //{
-            //    _handler.HandleRequest(request, response);   //开始处理请求（代码运行流程进入web网站程序）
-            //}
-
-
-            //返回
-            response.ContentType = "html";
-            response.ContentEncoding = Encoding.UTF8;
-            using (Stream output = response.OutputStream)  //发送回复
+            // 获取URL WebServer处理库名称
+            var urlLibName = (from x in request.Url.Segments where x.Trim('/').Length > 0 select x).FirstOrDefault();
+            urlLibName = urlLibName == null ? "" : urlLibName.Trim('/');
+            //var libPath = string.Format(@"{0}\{1}\{1}.dll", Environment.CurrentDirectory, urlLibName);
+            // WebServer处理库文件夹
+            var directoryPath = string.Format(@"{0}\MAPI.Libs\", Environment.CurrentDirectory);
+            // WebServer处理库文件
+            var libPath = (from x in Directory.GetFiles(directoryPath)
+                           where x.Contains(string.Format("{0}.dll", urlLibName))
+                           select x).FirstOrDefault();
+            if (libPath == null)
             {
-                byte[] buffer = Encoding.UTF8.GetBytes("<html><head><title>Web Server--News</title></head><body>first news</br>second news</body></html>");
-                output.Write(buffer, 0, buffer.Length);
+                foreach (string path in Directory.GetDirectories(directoryPath))
+                {
+                    libPath = (from x in Directory.GetFiles(path)
+                               where x.Contains(string.Format("{0}.dll", urlLibName))
+                               select x).FirstOrDefault();
+                    if (libPath != null) { break; }
+                }
+            }
+
+            // 检查库是否存在运行目录
+            if (urlLibName != null && File.Exists(libPath))
+            {
+                Console.WriteLine(libPath);
+                // 返回：未指定URL WebServer处理库名称
+                ResponseData rpData = new ResponseData()
+                { Code = 100, Msg = "客户端应当继续发送请求。这个临时响应是用来通知客户端它的部分请求已经被服务器接收，且仍未被拒绝。", Data = urlLibName };
+                response.ContentType = "application/json";
+                response.ContentEncoding = Encoding.UTF8;
+                //发送回复
+                using (Stream output = response.OutputStream)
+                {
+                    byte[] buffer = Encoding.UTF8.GetBytes(rpData.ToJson());
+                    output.Write(buffer, 0, buffer.Length);
+                }
+
+
+                //找路由器
+                if (_router == null)
+                {
+                    //加载当前目录下的处理程序
+                    Assembly assemble = Assembly.LoadFile(libPath);
+                    //注意网站程序中的路由器必须命名为 ns.Router
+                    Type type = assemble.GetType(urlLibName + ".Router");
+                    //创建路由器的实例
+                    _router = Activator.CreateInstance(type) as MAPI.Lib.IZRouter;
+                }
+                //根据路由器，找web处理程序中对应的处理者
+                _handler = _router.GetHandler(request.Url.AbsolutePath);
+                if (_handler != null)
+                {
+                    //开始处理请求（代码运行流程进入web网站程序）
+                    _handler.HandleRequest(request, response);
+                }
+            }
+            else
+            {
+                // 返回：未指定URL WebServer处理库名称
+                ResponseData rpData = new ResponseData()
+                { Code = 404, Msg = "请求失败，请求所希望得到的资源未被在服务器上发现。", Data = "" };
+                response.ContentType = "application/json";
+                response.ContentEncoding = Encoding.UTF8;
+                //发送回复
+                using (Stream output = response.OutputStream)
+                {
+                    byte[] buffer = Encoding.UTF8.GetBytes(rpData.ToJson());
+                    output.Write(buffer, 0, buffer.Length);
+                }
             }
         }
     }
